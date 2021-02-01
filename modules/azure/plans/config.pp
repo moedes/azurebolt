@@ -67,7 +67,7 @@ plan azure::config (
         'resource_type'  => 'azurerm_windows_virtual_machine',
         'target_mapping' => {
             'uri' => 'public_ip_address',
-            # 'name' => 'name',
+            'name' => 'name',
             'config' => {
               'winrm'  => {
                 'host' => 'public_ip_address',
@@ -150,6 +150,6 @@ plan azure::config (
     }
 
     # Terraform destory 
-    run_plan('terraform::destroy', dir => '/Users/jerrymozes/code/pewazure/azurebolt/terraform') 
+    run_plan('terraform::destroy', dir => '/Users/jerrymozes/code/pewazure/azurebolt/terraform')
   }
 }
