@@ -1,22 +1,3 @@
-# resource "azurerm_resource_group" "RG" {
-#   name     = "RG"
-#   location = "West US 2"
-# }
-
-# resource "azurerm_virtual_network" "mozes-net" {
-#   name                = "mozes-net"
-#   address_space       = ["192.168.25.0/24"]
-#   location            = azurerm_resource_group.RG.location
-#   resource_group_name = azurerm_resource_group.RG.name
-# }
-
-# resource "azurerm_subnet" "pe_subnet" {
-#   name                 = "pe_subnet"
-#   resource_group_name  = azurerm_resource_group.RG.name
-#   virtual_network_name = azurerm_virtual_network.mozes-net.name
-#   address_prefixes     = ["192.168.25.0/24"]
-# }
-
 resource "azurerm_network_interface" "win_int" {
   name                = "win_int"
   location            = azurerm_resource_group.RG.location

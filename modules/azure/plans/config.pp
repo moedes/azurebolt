@@ -6,7 +6,8 @@ plan azure::config (
     String $subnet = lookup('subnet'),
     String $vnet = lookup('vnet'),
     String $resource_group = lookup('resource_group'),
-    String $peserver = lookup('pe_server')
+    String $peserver = lookup('pe_server'),
+    #String $challengepwd = undef,
 ) {
 
   #########################################################
@@ -62,23 +63,22 @@ plan azure::config (
 
     # Windows References and mapping to inventory file
     $windowsref = {
-        '_plugin'        => 'terraform',
-        'dir'            => '~/code/pewazure/azurebolt/terraform',
-        'resource_type'  => 'azurerm_windows_virtual_machine',
-        'target_mapping' => {
-            'uri' => 'public_ip_address',
+        'targets'        => {
+          '_plugin'        => 'terraform',
+          'dir'            => '~/code/pewazure/azurebolt/terraform',
+          'resource_type'  => 'azurerm_windows_virtual_machine',
+          'target_mapping' => {
             'name' => 'name',
-            'config' => {
-              'winrm'  => {
-                'host' => 'public_ip_address',
-              }
-            }
+            'uri'  => 'public_ip_address'
+          }
         }
     }
 
     # Assigning resolved reference to variables for ease of use
     $linuxsvrs = resolve_references($linuxref)
     $winsrvrs = resolve_references($windowsref)
+
+    out::message($winsrvrs)
 
     ##########################
     # Perform Target Actions #
@@ -93,6 +93,9 @@ plan azure::config (
     $win_targets = $winsrvrs.map |$target| {
         Target.new($target)
     }
+
+    # out::message("The linux targets are ${lin_targets}")
+    out::message("The windows targets are ${win_targets}")
 
     # Populate all targets variable
     $alltargs = get_targets([$win_targets, $lin_targets])
@@ -111,9 +114,11 @@ plan azure::config (
       run_command($linpeinstall, $lin_targets)
     }
 
-    run_command('puppet agent -t', $alltargs)
-    # run_plan('reboot', $alltargs)
-    # wait_until_available($alltargs, 'wait_time' => 300)
+    catch_errors() || {
+      run_command('puppet agent -t', $alltargs, '_catch_errors' => true)
+      # run_plan('reboot', $alltargs)
+      # wait_until_available($alltargs, 'wait_time' => 300)
+    }
   }
 
   ###########
