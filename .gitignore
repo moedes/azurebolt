@@ -1,0 +1,8 @@
+*.backup
+data/
+inventory.yaml
+*.log
+.rerun.json
+*.tfstate
+terraform/.terraform/
+terraform/.terraform.lock.hcl
