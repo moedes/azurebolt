@@ -24,5 +24,6 @@ plan azure::tfapply (
   #Run Terraform Apply
   run_plan('terraform::apply', 'dir' => '~/code/pewazure/azurebolt/terraform')
 
+  out::message('Sleep for 60 seconds for nodes to boot....')
   ctrl::sleep(60) # To allow for machines to come up
 }
