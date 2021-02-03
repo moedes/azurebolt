@@ -1,5 +1,7 @@
 plan azure::agentinst (
-
+  String $challenge = lookup('challenge'),
+  String $peserver = lookup('peserver'),
+  String $domainname = lookup('domain')
 ) {
     #############################################
     # Pull in Terraform References for Bolt Use #
@@ -56,7 +58,9 @@ plan azure::agentinst (
     # Download puppet agent from PE Server and install on Windows nodes and autosign
     if ($win_targets) {
 
-      $winpeinst = '[System.Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}; $webClient = New-Object System.Net.WebClient; $webClient.DownloadFile("https://pemozes.iiwtyyvgvfre1fq0t3cfwbyrpf.xx.internal.cloudapp.net:8140/packages/current/install.ps1", "C:\\Users\\adminuser\\Downloads\\install.ps1"); C:\\Users\\adminuser\\Downloads\\install.ps1 custom_attributes:challengePassword=my1securepasswd'
+      $winpeinst = "[System.Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; [Net.ServicePointManager]::ServerCertificateValidationCallback = \n
+                    {\$true}; \$webClient = New-Object System.Net.WebClient; \$webClient.DownloadFile(\"https://${peserver}.${domainname}:8140/packages/current/install.ps1\", \n
+                    \"C:\\Users\\adminuser\\Downloads\\install.ps1\"); C:\\Users\\adminuser\\Downloads\\install.ps1 custom_attributes:challengePassword=${challenge}"
 
       run_command($winpeinst, $win_targets)
     }
@@ -64,7 +68,7 @@ plan azure::agentinst (
     # Download puppet agent from PE server and install on Linux nodes and autosign
     if ($lin_targets){
 
-      $linpeinstall = 'curl --insecure "https://pemozes.iiwtyyvgvfre1fq0t3cfwbyrpf.xx.internal.cloudapp.net:8140/packages/current/install.bash" | sudo bash -s custom_attributes:challengePassword=my1securepasswd'
+      $linpeinstall = "curl --insecure \"https://${peserver}.${domainname}:8140/packages/current/install.bash\" | sudo bash -s custom_attributes:challengePassword=${challenge}"
 
       run_command($linpeinstall, $lin_targets)
     }
