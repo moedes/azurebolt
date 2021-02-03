@@ -3,7 +3,7 @@ plan azure::tfapply (
     String $subnet = lookup('subnet'),
     String $vnet = lookup('vnet'),
     String $resource_group = lookup('resource_group'),
-    #String $challengepwd = undef,
+
 ){
 
   #####################
@@ -23,4 +23,6 @@ plan azure::tfapply (
 
   #Run Terraform Apply
   run_plan('terraform::apply', 'dir' => '~/code/pewazure/azurebolt/terraform')
+
+  ctrl::sleep(60) # To allow for machines to come up
 }
